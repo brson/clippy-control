@@ -18,7 +18,7 @@ fn main() -> AnyResult<()> {
 #[derive(clap::Parser)]
 struct Cli {
     #[command(subcommand)]
-    cmd: Command,
+    cmd: Option<Command>,
     #[command(flatten)]
     args: Args,
 }
@@ -34,13 +34,16 @@ struct Args {
     config_path: PathBuf,
 }
 
+#[derive(Default)]
 #[derive(clap::Args)]
 struct CheckCommand {
 }
 
 impl Cli {
-    fn run(&self) -> AnyResult<()> {
-        match &self.cmd {
+    fn run(self) -> AnyResult<()> {
+        match self.cmd.unwrap_or_else(|| {
+            Command::Check(CheckCommand::default())
+        }) {
             Command::Check(cmd) => cmd.run(&self.args),
         }
     }
@@ -48,8 +51,6 @@ impl Cli {
 
 impl CheckCommand {
     fn run(&self, args: &Args) -> AnyResult<()> {
-        info!("hello world");
-
         let config = load_config(&args.config_path)?;
         run_clippy(&config)?;
 
@@ -91,7 +92,7 @@ fn run_clippy(config: &Config) -> AnyResult<()> {
 
     let settings_args: Vec<String> = config.settings.iter()
         .map(|(lint_name, setting)| {
-            setting.clippy_arg(&lint_name)
+            setting.clippy_arg(lint_name)
         }).collect();
 
     let status = Command::new("cargo")

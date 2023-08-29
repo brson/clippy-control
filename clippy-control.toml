@@ -1,1 +1,2 @@
-needless_borrow = "allow"
+# example
+# needless_borrow = "allow"
