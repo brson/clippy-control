@@ -45,6 +45,7 @@ impl Cli {
 
 impl CheckCommand {
     fn run(&self, _args: &Args) -> AnyResult<()> {
+        // todo copy this to rustx template
         info!("hello world");
 
         Ok(())
