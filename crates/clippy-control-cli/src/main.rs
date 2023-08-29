@@ -6,7 +6,6 @@ fn main() -> AnyResult<()> {
     rx::extras::init();
 
     let cli = Cli::parse();
-
     cli.run()?;
 
     Ok(())
