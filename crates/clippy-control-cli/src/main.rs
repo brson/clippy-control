@@ -2,8 +2,9 @@
 
 use rx::prelude::*;
 use rx::clap::{self, Parser as _};
+use rx::serde;
 use std::path::{Path, PathBuf};
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 fn main() -> AnyResult<()> {
     rx::extras::init();
@@ -57,7 +58,7 @@ impl CheckCommand {
 }
 
 struct Config {
-    settings: HashMap<String, LintSetting>,
+    settings: BTreeMap<String, LintSetting>,
 }
 
 enum LintSetting {
@@ -73,10 +74,23 @@ fn load_config(path: &Path) -> AnyResult<Config> {
     let buf = std::fs::read_to_string(path)
         .context(format!("unable to read config file {}", path.display()))?;
     let settings: Map<String, Value> = toml::from_str(&buf)?;
+    let settings: AnyResult<BTreeMap<String, LintSetting>> = settings.into_iter()
+        .map(|(lint_name, setting)| {
+            Ok((lint_name, LintSetting::from_toml(&setting)?))
+        })
+        .collect();
+    let settings = settings?;
 
-    todo!()
+    Ok(Config { settings })
 }
 
 fn run_clippy(config: &Config) -> AnyResult<()> {
     todo!()
 }
+
+impl LintSetting {
+    fn from_toml(value: &rx::toml::Value) -> AnyResult<LintSetting> {
+        todo!()
+    }
+}
+
