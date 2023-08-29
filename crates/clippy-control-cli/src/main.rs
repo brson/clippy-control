@@ -76,7 +76,9 @@ fn load_config(path: &Path) -> AnyResult<Config> {
     let settings: Map<String, Value> = toml::from_str(&buf)?;
     let settings: AnyResult<BTreeMap<String, LintSetting>> = settings.into_iter()
         .map(|(lint_name, setting)| {
-            Ok((lint_name, LintSetting::from_toml(&setting)?))
+            let setting = LintSetting::from_toml(&setting)
+                .context(format!("parsing lint '{lint_name}'"))?;
+            Ok((lint_name, setting))
         })
         .collect();
     let settings = settings?;
@@ -85,12 +87,64 @@ fn load_config(path: &Path) -> AnyResult<Config> {
 }
 
 fn run_clippy(config: &Config) -> AnyResult<()> {
-    todo!()
+    use std::process::Command;
+
+    let settings_args: Vec<String> = config.settings.iter()
+        .map(|(lint_name, setting)| {
+            setting.clippy_arg(&lint_name)
+        }).collect();
+
+    let status = Command::new("cargo")
+        .arg("clippy")
+        .arg("--")
+        .args(&settings_args)
+        .status()?;
+
+    match status.code() {
+        Some(code) => {
+            std::process::exit(code);
+        }
+        None => {
+            bail!("cargo-clippy terminated without exit code");
+        }
+    }
 }
 
 impl LintSetting {
     fn from_toml(value: &rx::toml::Value) -> AnyResult<LintSetting> {
-        todo!()
+        use rx::toml::Value;
+
+        Ok(match value {
+            Value::String(s) => {
+                match s.as_str() {
+                    "warn" => LintSetting::Warn,
+                    "allow" => LintSetting::Allow,
+                    "deny" => LintSetting::Deny,
+                    "forbid" => LintSetting::Forbid,
+                    _ => bail!("unrecognized value '{s}'"),
+                }
+            }
+            _ => {
+                bail!("value '{}' not a string", value);
+            }
+        })
+    }
+
+    fn clippy_arg(&self, lint_name: &str) -> String {
+        match self {
+            LintSetting::Warn => {
+                format!("-Wclippy::{lint_name}")
+            }
+            LintSetting::Allow => {
+                format!("-Aclippy::{lint_name}")
+            }
+            LintSetting::Forbid => {
+                format!("-Fclippy::{lint_name}")
+            }
+            LintSetting::Deny => {
+                format!("-Dclippy::{lint_name}")
+            }
+        }
     }
 }
 
