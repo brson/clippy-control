@@ -441,13 +441,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "clippy-control-cli"
-version = "0.1.0"
-dependencies = [
- "rustmax",
-]
-
-[[package]]
 name = "codespan-reporting"
 version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"

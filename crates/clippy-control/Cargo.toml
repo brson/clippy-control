@@ -9,3 +9,7 @@ edition.workspace = true
 rx.workspace = true
 rx.features = [
 ]
+
+[[bin]]
+name = "clippy-control"
+path = "src/main.rs"

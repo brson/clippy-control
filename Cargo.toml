@@ -14,7 +14,7 @@ members = [
 ]
 
 default-members = [
-  "crates/clippy-control-cli",
+  "crates/clippy-control",
 ]
 
 [workspace.dependencies]
