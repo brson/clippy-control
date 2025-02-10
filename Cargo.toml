@@ -1,6 +1,6 @@
 [workspace.package]
 description = "Control clippy lints with a configuration file"
-version = "0.1.0"
+version = "0.0.1"
 license = "Apache-2.0 OR MIT"
 authors = ["Brian Anderson <andersrb@gmail.com>"]
 repository = "https://github.com/brson/clippy-control"
