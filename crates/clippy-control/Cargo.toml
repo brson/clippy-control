@@ -6,9 +6,7 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-rx.workspace = true
-rx.features = [
-]
+rmx.workspace = true
 
 [[bin]]
 name = "clippy-control"

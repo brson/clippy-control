@@ -1,5 +1,5 @@
 [workspace.package]
-description = "todo"
+description = "Control clippy lints with a configuration file"
 version = "0.1.0"
 license = "Apache-2.0 OR MIT"
 authors = ["Brian Anderson <andersrb@gmail.com>"]
@@ -18,9 +18,10 @@ default-members = [
 ]
 
 [workspace.dependencies]
-rx.path = "../rustmax/crates/rustmax"
-rx.package = "rustmax"
-rx.features = [
+rmx.path = "../rustmax/crates/rustmax"
+rmx.package = "rustmax"
+rmx.version = "0.0.3"
+rmx.features = [
   "rmx-profile-std",
   "rmx-profile-cli",
   "rmx-feature-derive",

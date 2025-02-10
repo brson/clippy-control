@@ -1,13 +1,13 @@
 #![allow(unused)]
 
-use rx::prelude::*;
-use rx::clap::{self, Parser as _};
-use rx::serde;
+use rmx::prelude::*;
+use rmx::clap::{self, Parser as _};
+use rmx::serde;
 use std::path::{Path, PathBuf};
 use std::collections::BTreeMap;
 
 fn main() -> AnyResult<()> {
-    rx::extras::init();
+    rmx::extras::init();
 
     let cli = Cli::parse();
     cli.run()?;
@@ -67,10 +67,10 @@ enum LintSetting {
 }
 
 fn load_config(path: &Path) -> AnyResult<Config> {
-    use rx::toml;
-    use rx::toml::Value;
-    use rx::toml::map::Map;
-    use rx::serde::Deserialize;
+    use rmx::toml;
+    use rmx::toml::Value;
+    use rmx::toml::map::Map;
+    use rmx::serde::Deserialize;
 
     let buf = std::fs::read_to_string(path)
         .context(format!("unable to read config file {}", path.display()))?;
@@ -112,8 +112,8 @@ fn run_clippy(config: &Config) -> AnyResult<()> {
 }
 
 impl LintSetting {
-    fn from_toml(value: &rx::toml::Value) -> AnyResult<LintSetting> {
-        use rx::toml::Value;
+    fn from_toml(value: &rmx::toml::Value) -> AnyResult<LintSetting> {
+        use rmx::toml::Value;
 
         Ok(match value {
             Value::String(s) => {
