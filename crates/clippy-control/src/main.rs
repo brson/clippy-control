@@ -32,6 +32,8 @@ enum Command {
 struct Args {
     #[arg(default_value = "clippy-control.toml")]
     config_path: PathBuf,
+    #[arg(long)]
+    fix: bool,
 }
 
 #[derive(Default)]
@@ -52,7 +54,7 @@ impl Cli {
 impl CheckCommand {
     fn run(&self, args: &Args) -> AnyResult<()> {
         let config = load_config(&args.config_path)?;
-        run_clippy(&config)?;
+        run_clippy(&config, args)?;
 
         Ok(())
     }
@@ -87,7 +89,10 @@ fn load_config(path: &Path) -> AnyResult<Config> {
     Ok(Config { settings })
 }
 
-fn run_clippy(config: &Config) -> AnyResult<()> {
+fn run_clippy(
+    config: &Config,
+    args: &Args,
+) -> AnyResult<()> {
     use std::process::Command;
 
     let settings_args: Vec<String> = config.settings.iter()
@@ -95,11 +100,13 @@ fn run_clippy(config: &Config) -> AnyResult<()> {
             setting.clippy_arg(lint_name)
         }).collect();
 
-    let status = Command::new("cargo")
-        .arg("clippy")
-        .arg("--")
-        .args(&settings_args)
-        .status()?;
+    let mut cmd = Command::new("cargo");
+    cmd.arg("clippy");
+    if args.fix {
+        cmd.arg("--fix");
+    }
+    cmd.arg("--").args(&settings_args);
+    let status = cmd.status()?;
 
     match status.code() {
         Some(code) => {
